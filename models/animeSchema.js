@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-const { Schema } = mongoose;
+import { Schema, model } from "mongoose";
 
 const animeSchema = new Schema({
   title: {
@@ -32,4 +31,4 @@ const animeSchema = new Schema({
   
 });
 
-export default mongoose.model("Anime", animeSchema);
+export default model("Anime", animeSchema);
