@@ -4,4 +4,6 @@ import uploadUser from "../controller/userController.js";
 const userRouter = Router();
 
 
-userRouter.post("/login", uploadUser);
+userRouter.post("/", uploadUser);
+
+export default userRouter
