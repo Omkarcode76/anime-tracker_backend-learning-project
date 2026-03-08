@@ -15,6 +15,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
     minlength: [4, "password must be atleast 4 charater long"],
+    select: false,
   },
 
   createdAt: {
