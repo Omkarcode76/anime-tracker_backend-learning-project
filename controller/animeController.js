@@ -41,11 +41,14 @@ const getAnime = async (req, res) => {
 };
 const getAnimeById = async (req, res) => {
   try {
-    const anime = await Anime.findById(req.params.id );
-    if (!anime) {
-      return res.status(404).json({ message: "No anime added" });
+    const id = req.params.id
+   const userId = req.user.userId
+    const anime = await Anime.findOne({userId : userId, _id:id});
+    if(!anime){
+      return res.status(400).json({"message" : "anime not found" })
     }
     res.status(200).json(anime);
+  
   } catch (error) {
     res.status(500).json({ Message: "Server Error" });
   }
@@ -75,8 +78,9 @@ const postAnime = async (req, res) => {
 
 const deleteAnime = async (req, res) => {
   try {
-    const id = req.params.id;
-    const anime = await Anime.findByIdAndDelete(id);
+   const id = req.params.id
+   const userId = req.user.userId
+    const anime = await Anime.findOneAndDelete({userId : userId, _id:id});
     if (!anime) {
       return res.status(404).json({ message: "anime with such id not found" });
     }
@@ -89,9 +93,10 @@ const deleteAnime = async (req, res) => {
 const updateAnime = async (req, res) => {
   try {
     const id = req.params.id;
+    const userId = req.user.userId
     const { title, genre, watchStatus, rating, isFavourite } = req.body;
-    const anime = await Anime.findByIdAndUpdate(
-      id,
+    const anime = await Anime.findOneAndUpdate(
+      {userId : userId, _id:id},
       {
         title,
         genre,
@@ -110,21 +115,10 @@ const updateAnime = async (req, res) => {
   }
 };
 
-const deleteAllAnime = async (req, res) => {
-  try {
-    if(await Anime.collection.indexExists()){
-  await Anime.collection.drop()}
-  
-   res.status(200).json({"message" : "collection dropped successfully"})
-  } catch (error) {
-    res.status(500).json({ Message: "Server Error" });
-  }
-};
 export {
   getAnime,
   getAnimeById,
   postAnime,
   deleteAnime,
-  deleteAllAnime,
   updateAnime,
 };
