@@ -37,7 +37,9 @@ const signUp = async (req, res) => {
 const Login = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-
+    if(!username || !email || !password){
+      return res.status(400).json({"message" : "required field cannot be empty"})
+    }
     const x = {};
     if (username || email) {
       x.$or = [{ username: username }, { email: email }];
@@ -57,7 +59,13 @@ const Login = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    res.status(200).json(token);
+    res.status(200).json(
+      {token,
+      user:{
+        userId : user._id,
+        username : user.username
+      }}
+    );
   } catch (error) {
     res.status(500).json({ message: "server error" });
   }
