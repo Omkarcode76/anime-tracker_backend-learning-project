@@ -5,10 +5,9 @@ const signUp = () => {
 const [email, setEmail] = useState("")
 const [password, setPassword] = useState("")
 
-const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log("form submit")
- fetch("http://localhost:3000/user/signup", {
+const res = await fetch("http://localhost:3000/user/signup", {
   method : "POST",
 headers:{
   "Content-type" : "application/json"
@@ -19,12 +18,16 @@ body : JSON.stringify({
   password
 })
 })
+const data = await res.json()
+console.log()
+setUsername("")
+setEmail("")
+setPassword("")
 }
 
   return (
     <div> 
-      <h1 className="text-center text-5xl font-bold text-red-500 m-10">SignUp page</h1>
-      <div className=""></div>
+      <h1 className="text-center text-5xl font-bold text-red-500 m-10">SignUp</h1>
       <div>
         <form onSubmit={handleSubmit} className="inputs flex flex-col items-center gap-6">
 

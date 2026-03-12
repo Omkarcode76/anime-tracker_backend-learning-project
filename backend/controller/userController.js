@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 const signUp = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    console.log(req.body)
+
     const hashedPassword = await bcrypt.hash(password, 8);
     
     const isUsername = await User.findOne({ username: username });
@@ -37,7 +37,8 @@ const signUp = async (req, res) => {
 const Login = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    if(!username || !email || !password){
+
+    if(!password || (username && email)){
       return res.status(400).json({"message" : "required field cannot be empty"})
     }
     const x = {};
@@ -59,11 +60,13 @@ const Login = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
+    
     res.status(200).json(
       {token,
       user:{
         userId : user._id,
-        username : user.username
+        username : user.username,
+        email : user.email
       }}
     );
   } catch (error) {
