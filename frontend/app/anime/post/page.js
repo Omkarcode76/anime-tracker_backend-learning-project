@@ -7,6 +7,7 @@ const Post = () => {
   const [watchStatus, setWatchStatus] = useState("");
   const [rating, setRating] = useState("");
   const [isFavourite, setIsFavourite] = useState("");
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");

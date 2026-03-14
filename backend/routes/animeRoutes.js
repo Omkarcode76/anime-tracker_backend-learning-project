@@ -5,7 +5,7 @@ import {
   postAnime,
   deleteAnime,
   updateAnime,
-} from "../controller/animeController.js";
+} from "../controllers/animeController.js";
 
 
 const animeRouter = Router();
@@ -17,7 +17,7 @@ animeRouter.post("/post", postAnime);
 
 
 
-animeRouter.delete("/:id", deleteAnime);
+animeRouter.delete("/delete/:id", deleteAnime);
 
 animeRouter.put("/:id", updateAnime);
 

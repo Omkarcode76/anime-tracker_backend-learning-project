@@ -1,8 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect} from "react";
+import {useRouter} from "next/navigation"
 
 const Login = () => {
+  const router = useRouter()
+  useEffect(() => {
+      const token = localStorage.getItem("token")
+      if(token){
+        router.push('/anime')
+      }
+    }, [])
+
   const [usernameORemail, setUsernameORemail] = useState("");
   const [password, setPassword] = useState("");
 
