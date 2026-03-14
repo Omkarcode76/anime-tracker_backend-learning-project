@@ -5,6 +5,7 @@ const animeSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref : "User",
     required: true,
+    select : false,
   },
 
   title: {
@@ -22,7 +23,7 @@ const animeSchema = new Schema({
   },
   rating: {
     type: Number,
-    min: 1,
+    min: 0,
     max: 10,
   },
   isFavourite: {

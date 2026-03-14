@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 
 const Login = () => {
@@ -7,22 +8,21 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  const res = await fetch("http://localhost:3000/user/login", {
+    const res = await fetch("http://localhost:3000/user/login", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body : JSON.stringify({
+      body: JSON.stringify({
         usernameORemail,
-        password
-      })
-     
+        password,
+      }),
     });
-    const data = await res.json()
-   localStorage.setItem("token",data.token)
-   
-    setUsernameORemail("")
-    setPassword("")
+    const data = await res.json();
+    localStorage.setItem("token", data.token);
+
+    setUsernameORemail("");
+    setPassword("");
   };
 
   return (

@@ -13,7 +13,7 @@ const animeRouter = Router();
 animeRouter.get("/", getAnime);
 animeRouter.get("/:id", getAnimeById);
 
-animeRouter.post("/", postAnime);
+animeRouter.post("/post", postAnime);
 
 
 

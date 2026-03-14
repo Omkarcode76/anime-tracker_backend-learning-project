@@ -9,9 +9,9 @@ const getAnime = async (req, res) => {
     query.favourite = req.query.favourite;
     query.watchStatus = req.query.watchStatus;
     query.search = req.query.search;
-    query.sort = req.query.sort || "createdAt"
+    query.sort = req.query.sort || "createdAt";
     const filter = {};
-    filter.userId = req.user.userId
+    filter.userId = req.user.userId;
     if (query.favourite === "yes" || query.favourite === "no") {
       filter.isFavourite = query.favourite;
     }
@@ -29,7 +29,10 @@ const getAnime = async (req, res) => {
       ];
     }
 
-    const animes = await Anime.find(filter).skip(skip).limit(query.limit).sort({[query.sort] : -1});
+    const animes = await Anime.find(filter)
+      .skip(skip)
+      .limit(query.limit)
+      .sort({ [query.sort]: -1 });
 
     if (!animes) {
       return res.status(404).json({ message: "No anime added" });
@@ -41,14 +44,13 @@ const getAnime = async (req, res) => {
 };
 const getAnimeById = async (req, res) => {
   try {
-    const id = req.params.id
-   const userId = req.user.userId
-    const anime = await Anime.findOne({userId : userId, _id:id});
-    if(!anime){
-      return res.status(400).json({"message" : "anime not found" })
+    const id = req.params.id;
+    const userId = req.user.userId;
+    const anime = await Anime.findOne({ userId: userId, _id: id });
+    if (!anime) {
+      return res.status(400).json({ message: "anime not found" });
     }
     res.status(200).json(anime);
-  
   } catch (error) {
     res.status(500).json({ Message: "Server Error" });
   }
@@ -60,13 +62,13 @@ const postAnime = async (req, res) => {
     if (title === undefined || genre === undefined) {
       return res.status(400).json({ message: "Fill title and genre" });
     }
-    
+
     const anime = await Anime.create({
-      userId : req.user.userId,
+      userId: req.user.userId,
       title,
       genre,
       watchStatus,
-      rating,
+      rating: Number(rating),
       isFavourite,
     });
 
@@ -78,9 +80,9 @@ const postAnime = async (req, res) => {
 
 const deleteAnime = async (req, res) => {
   try {
-   const id = req.params.id
-   const userId = req.user.userId
-    const anime = await Anime.findOneAndDelete({userId : userId, _id:id});
+    const id = req.params.id;
+    const userId = req.user.userId;
+    const anime = await Anime.findOneAndDelete({ userId: userId, _id: id });
     if (!anime) {
       return res.status(404).json({ message: "anime with such id not found" });
     }
@@ -93,10 +95,10 @@ const deleteAnime = async (req, res) => {
 const updateAnime = async (req, res) => {
   try {
     const id = req.params.id;
-    const userId = req.user.userId
+    const userId = req.user.userId;
     const { title, genre, watchStatus, rating, isFavourite } = req.body;
     const anime = await Anime.findOneAndUpdate(
-      {userId : userId, _id:id},
+      { userId: userId, _id: id },
       {
         title,
         genre,
@@ -115,10 +117,4 @@ const updateAnime = async (req, res) => {
   }
 };
 
-export {
-  getAnime,
-  getAnimeById,
-  postAnime,
-  deleteAnime,
-  updateAnime,
-};
+export { getAnime, getAnimeById, postAnime, deleteAnime, updateAnime };
