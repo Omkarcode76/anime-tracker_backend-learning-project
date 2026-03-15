@@ -58,7 +58,9 @@ const getAnimeById = async (req, res) => {
 
 const postAnime = async (req, res) => {
   try {
-    const { title, genre, watchStatus, rating, isFavourite } = req.body;
+    const { title, genre, watchStatus, isFavourite } = req.body;
+    const rating = Number(req.body.rating) || 0
+    
     if (title === undefined || genre === undefined) {
       return res.status(400).json({ message: "Fill title and genre" });
     }
@@ -68,7 +70,7 @@ const postAnime = async (req, res) => {
       title,
       genre,
       watchStatus,
-      rating: Number(rating),
+      rating,
       isFavourite,
     });
 

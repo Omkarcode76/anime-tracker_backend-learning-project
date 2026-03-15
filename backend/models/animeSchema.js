@@ -3,9 +3,9 @@ import { Schema, model } from "mongoose";
 const animeSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
-    ref : "User",
+    ref: "User",
     required: true,
-    select : false,
+    select: false,
   },
 
   title: {
@@ -25,6 +25,7 @@ const animeSchema = new Schema({
     type: Number,
     min: 0,
     max: 10,
+    default: 0,
   },
   isFavourite: {
     type: String,

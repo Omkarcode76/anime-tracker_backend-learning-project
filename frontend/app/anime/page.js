@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 const Anime = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [editTitle, setEditTitle] = useState("");
   const [editGenre, setEditGenre] = useState("");
   const [editWatchStatus, setEditWatchStatus] = useState("");
   const [editFavourite, setEditFavourite] = useState("");
   const [editRating, setEditRating] = useState("");
-const [deleteId, setDeleteId] = useState("")
+  const [deleteId, setDeleteId] = useState("");
   const [animes, setAnimes] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -17,10 +18,9 @@ const [deleteId, setDeleteId] = useState("")
   const [watchStatus, setWatchStatus] = useState("");
   const [editingid, setEditingid] = useState("");
 
-
   useEffect(() => {
     getAnimes();
-  }, [search, page, favourite, watchStatus,editingid, deleteId]);
+  }, [search, page, favourite, watchStatus, editingid, deleteId]);
 
   const getAnimes = async () => {
     const params = new URLSearchParams({
@@ -36,10 +36,10 @@ const [deleteId, setDeleteId] = useState("")
         Authorization: `Bearer ${token}`,
       },
     });
-    if(res.status === 401){
-      localStorage.removeItem("token")
-      router.push("/login")
-      return
+    if (res.status === 401) {
+      localStorage.removeItem("token");
+      router.push("/login");
+      return;
     }
     const data = await res.json();
     setAnimes(data);
@@ -52,7 +52,7 @@ const [deleteId, setDeleteId] = useState("")
   };
 
   const Edit = (item) => {
-    console.log(item._id);
+    
     setEditingid(item._id);
     setEditTitle(item.title);
     setEditGenre(item.genre);
@@ -62,7 +62,6 @@ const [deleteId, setDeleteId] = useState("")
   };
 
   const UpdateAnime = async () => {
-   
     const token = localStorage.getItem("token");
     const updateId = editingid;
 
@@ -80,185 +79,214 @@ const [deleteId, setDeleteId] = useState("")
         rating: editRating,
       }),
     });
-    const data = await res.json()
-    console.log(data)
-    setEditingid("")
+    const data = await res.json();
+    console.log(data);
+    setEditingid("");
   };
-const DeleteAnime = async (item) => {
-   const Deleteid = item._id
-   setDeleteId(Deleteid)
-   const token = localStorage.getItem("token")
-   const res = await fetch(`http://localhost:3000/anime/delete/${Deleteid}`,{
-    method: "DELETE",
-    headers:{
-        Authorization: `Bearer ${token}`
-    }
-   })
-setDeleteId("")
-  
-}
+  const DeleteAnime = async (item) => {
+    const Deleteid = item._id;
+    setDeleteId(Deleteid);
+    const token = localStorage.getItem("token");
+    const res = await fetch(`http://localhost:3000/anime/delete/${Deleteid}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setDeleteId("");
+  };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
 
   return (
     <>
       <div className="">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="h-20 bg-white w-[80vw] rounded-full m-10 p-7"
-        />
-        <div>
-          <ul className="m-10 flex gap items-center gap-5">
-            <span className="text-blue-500 font-bold text-center text-2xl">Filter: </span>
-            <li
-              onClick={() => {
-                setWatchStatus("");
-                setFavourite("");
-              }}
-              className="hover:text-white cursor-pointer hover:bg-green-500 hover:rounded-full px-4 py-2 font-bold  text-lg "
-            >
-              All
-            </li>
-            <li
-              onClick={() => setWatchStatus("completed")}
-              className="hover:text-white cursor-pointer hover:bg-green-500 hover:rounded-full px-4 py-2 font-bold  text-lg"
-            >
-              Completed
-            </li>
-            <li
-              onClick={() => setWatchStatus("ongoing")}
-              className="hover:text-white cursor-pointer hover:bg-green-500 hover:rounded-full px-4 py-2 font-bold  text-lg"
-            >
-              on going
-            </li>
-            <li
-              onClick={() => setWatchStatus("notstarted")}
-              className="hover:text-white cursor-pointer hover:bg-green-500 hover:rounded-full px-4 py-2 font-bold  text-lg"
-            >
-              not started
-            </li>
-            <li
-              onClick={() => setFavourite("yes")}
-              className="hover:text-white cursor-pointer hover:bg-green-500 hover:rounded-full px-4 py-2 font-bold  text-lg"
-            >
-              favourite
-            </li>
-          </ul>
-        </div>
-        <ul className="">
-          {animes.map((a) => (
-            <div key={a._id}>
-              {a._id !== editingid ? (
-                <li className="m-10 bg-green-300 h-[40vh] w-[80vw] font-bold text-2xl flex flex-col justify-center rounded-2xl">
-                  <ul className="flex gap-6 flex-col mx-20">
-                    <li>title : {a.title}</li>
-                    <li>genre : {a.genre}</li>
-                    <li>watch status : {a.watchStatus}</li>
-                    <li>favourite : {a.isFavourite}</li>
-                    <li>rating : {a.rating}</li>
-                    <li>
-                      <button
-                        onClick={() => Edit(a)}
-                        className="bg-green-700 text-white text-lg px-3 py-1 rounded-full cursor-pointer hover:bg-green-500 mr-3"
-                      >
-                        Edit
-                      </button>
-                      <button onClick={()=>DeleteAnime(a)} className="bg-green-700 text-white text-lg px-3 py-1 rounded-full cursor-pointer hover:bg-green-500 mr-3">
-                        Delete
-                      </button>
-                    </li>
-                  </ul>
-                </li>
-              ) : (
-                <li className="m-10 bg-green-300 h-[40vh] w-[80vw] font-bold text-2xl flex flex-col justify-center rounded-2xl">
-                  <ul className="flex gap-6  flex-col mx-20">
-                    <li className="flex">
-                      title:{" "}
-                      <input
-                        type="text"
-                        onChange={(e) => setEditTitle(e.target.value)}
-                        value={editTitle}
-                        placeholder="Enter title"
-                        className="h-10 w-[70%] rounded-xl p-4 mx-4  bg-white"
-                      />
-                    </li>
-                    <li className="flex">
-                      {" "}
-                      genre:{" "}
-                      <input
-                        type="text"
-                        onChange={(e) => setEditGenre(e.target.value)}
-                        value={editGenre}
-                        placeholder="Enter title"
-                        className="h-10 w-[70%] rounded-xl p-4 mx-4  bg-white"
-                      />
-                    </li>
-                    <li className="flex">
-                      watchStatus:{" "}
-                      <input
-                        type="text"
-                        onChange={(e) => setEditWatchStatus(e.target.value)}
-                        value={editWatchStatus}
-                        placeholder="Enter title"
-                        className="h-10  p-4 mx-4 w-[70%] rounded-xl bg-white"
-                      />
-                    </li>
-                    <li className="flex">
-                      favourite:{" "}
-                      <input
-                        type="text"
-                        onChange={(e) => setEditFavourite(e.target.value)}
-                        value={editFavourite}
-                        placeholder="Enter title"
-                        className="h-10 w-[70%] p-4 mx-4  rounded-xl bg-white"
-                      />
-                    </li>
-                    <li className="flex">
-                      rating:{" "}
-                      <input
-                        type="text"
-                        onChange={(e) => setEditRating(e.target.value)}
-                        value={editRating}
-                        placeholder="Enter title"
-                        className="h-10 w-[70%] rounded-xl p-4 mx-4  bg-white"
-                      />
-                    </li>
-                    <li>
-                      <button
-                        onClick={(e) => UpdateAnime()}
-                        className="bg-green-700 text-white text-lg px-3 py-1 rounded-full cursor-pointer hover:bg-green-500 mr-3"
-                      >
-                        save
-                      </button>
-                      <button onClick={()=>setEditingid("")} className="bg-green-700 text-white text-lg px-3 py-1 rounded-full cursor-pointer hover:bg-green-500 mr-3">
-                        cancel
-                      </button>
-                    </li>
-                  </ul>
-                </li>
-              )}
-            </div>
-          ))}
-        </ul>
-        <div className="flex justify-center gap-5 my-10">
-          {page > 1 && (
-            <button
-              onClick={handlePreviousPage}
-              className="bg-blue-500 hover:bg-blue-400 px-4 py-3 text-white font-bold cursor-pointer rounded-full"
-            >
-              previous page
-            </button>
-          )}
+        <div className="flex m-15 justify-around">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-20 bg-white w-[80vw] rounded-full p-7"
+          />
 
-          {animes.length >= 5 && (
-            <button
-              onClick={handleNextPage}
-              className="bg-blue-500 hover:bg-blue-400 px-4 py-3 text-white font-bold cursor-pointer rounded-full"
-            >
-              next page
-            </button>
-          )}
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white rounded-full px-4 cursor-pointer hover:bg-red-400 text-lg font-bold "
+          >
+            Logout
+          </button>
         </div>
+    {animes.length !== 0 ? (<div>
+          <div>
+            <ul className="m-10 flex gap items-center gap-5">
+              <span className="text-blue-500 font-bold text-center text-2xl">
+                Filter:{" "}
+              </span>
+              <li
+                onClick={() => {
+                  setWatchStatus("");
+                  setFavourite("");
+                }}
+                className="hover:text-white cursor-pointer hover:bg-green-500 hover:rounded-full px-4 py-2 font-bold  text-lg "
+              >
+                All
+              </li>
+              <li
+                onClick={() => setWatchStatus("completed")}
+                className="hover:text-white cursor-pointer hover:bg-green-500 hover:rounded-full px-4 py-2 font-bold  text-lg"
+              >
+                Completed
+              </li>
+              <li
+                onClick={() => setWatchStatus("ongoing")}
+                className="hover:text-white cursor-pointer hover:bg-green-500 hover:rounded-full px-4 py-2 font-bold  text-lg"
+              >
+                on going
+              </li>
+              <li
+                onClick={() => setWatchStatus("notstarted")}
+                className="hover:text-white cursor-pointer hover:bg-green-500 hover:rounded-full px-4 py-2 font-bold  text-lg"
+              >
+                not started
+              </li>
+              <li
+                onClick={() => setFavourite("yes")}
+                className="hover:text-white cursor-pointer hover:bg-green-500 hover:rounded-full px-4 py-2 font-bold  text-lg"
+              >
+                favourite
+              </li>
+            </ul>
+          </div>
+          <ul className="">
+            {animes.map((a) => (
+              <div key={a._id}>
+                {a._id !== editingid ? (
+                  <li className="m-10 bg-green-300 h-[40vh] w-[80vw] font-bold text-2xl flex flex-col justify-center rounded-2xl">
+                    <ul className="flex gap-6 flex-col mx-20">
+                      <li>title : {a.title}</li>
+                      <li>genre : {a.genre}</li>
+                      <li>watch status : {a.watchStatus}</li>
+                      <li>favourite : {a.isFavourite}</li>
+                      <li>rating : {a.rating}</li>
+                      <li>
+                        <button
+                          onClick={() => Edit(a)}
+                          className="bg-green-700 text-white text-lg px-3 py-1 rounded-full cursor-pointer hover:bg-green-500 mr-3"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => DeleteAnime(a)}
+                          className="bg-green-700 text-white text-lg px-3 py-1 rounded-full cursor-pointer hover:bg-green-500 mr-3"
+                        >
+                          Delete
+                        </button>
+                      </li>
+                    </ul>
+                  </li>
+                ) : (
+                  <li className="m-10 bg-green-300 h-[40vh] w-[80vw] font-bold text-2xl flex flex-col justify-center rounded-2xl">
+                    <ul className="flex gap-6  flex-col mx-20">
+                      <li className="flex">
+                        title:{" "}
+                        <input
+                          type="text"
+                          onChange={(e) => setEditTitle(e.target.value)}
+                          value={editTitle}
+                          placeholder="Enter title"
+                          className="h-10 w-[70%] rounded-xl p-4 mx-4  bg-white"
+                        />
+                      </li>
+                      <li className="flex">
+                        {" "}
+                        genre:{" "}
+                        <input
+                          type="text"
+                          onChange={(e) => setEditGenre(e.target.value)}
+                          value={editGenre}
+                          placeholder="Enter title"
+                          className="h-10 w-[70%] rounded-xl p-4 mx-4  bg-white"
+                        />
+                      </li>
+                      <li className="flex">
+                        watchStatus:{" "}
+                        <input
+                          type="text"
+                          onChange={(e) => setEditWatchStatus(e.target.value)}
+                          value={editWatchStatus}
+                          placeholder="Enter title"
+                          className="h-10  p-4 mx-4 w-[70%] rounded-xl bg-white"
+                        />
+                      </li>
+                      <li className="flex">
+                        favourite:{" "}
+                        <input
+                          type="text"
+                          onChange={(e) => setEditFavourite(e.target.value)}
+                          value={editFavourite}
+                          placeholder="Enter title"
+                          className="h-10 w-[70%] p-4 mx-4  rounded-xl bg-white"
+                        />
+                      </li>
+                      <li className="flex">
+                        rating:{" "}
+                        <input
+                          type="text"
+                          onChange={(e) => setEditRating(e.target.value)}
+                          value={editRating}
+                          placeholder="Enter title"
+                          className="h-10 w-[70%] rounded-xl p-4 mx-4  bg-white"
+                        />
+                      </li>
+                      <li>
+                        <button
+                          onClick={(e) => UpdateAnime()}
+                          className="bg-green-700 text-white text-lg px-3 py-1 rounded-full cursor-pointer hover:bg-green-500 mr-3"
+                        >
+                          save
+                        </button>
+                        <button
+                          onClick={() => setEditingid("")}
+                          className="bg-green-700 text-white text-lg px-3 py-1 rounded-full cursor-pointer hover:bg-green-500 mr-3"
+                        >
+                          cancel
+                        </button>
+                      </li>
+                    </ul>
+                  </li>
+                )}
+              </div>
+            ))}
+          </ul>
+          <div className="flex justify-center gap-5 my-10">
+            {page > 1 && (
+              <button
+                onClick={handlePreviousPage}
+                className="bg-blue-500 hover:bg-blue-400 px-4 py-3 text-white font-bold cursor-pointer rounded-full"
+              >
+                previous page
+              </button>
+            )}
+
+            {animes.length >= 5 && (
+              <button
+                onClick={handleNextPage}
+                className="bg-blue-500 hover:bg-blue-400 px-4 py-3 text-white font-bold cursor-pointer rounded-full"
+              >
+                next page
+              </button>
+            )}
+          </div>
+        </div>)
+        :(
+          <div className="text-5xl font-bold flex justify-center items-center h-[50vh]">
+            <Link href={'/anime/post'} className="hover:underline">no animes added! click to add</Link>
+          </div>
+        )}
+        
+  
       </div>
     </>
   );

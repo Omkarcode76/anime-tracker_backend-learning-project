@@ -2,16 +2,23 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 const Post = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [genre, setGenre] = useState("");
   const [watchStatus, setWatchStatus] = useState("");
   const [rating, setRating] = useState("");
   const [isFavourite, setIsFavourite] = useState("");
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
+    const body = {
+      ...(title && { title }),
+      ...(genre && { genre }),
+      ...(watchStatus && { watchStatus }),
+      ...(rating && { rating }),
+      ...(isFavourite && { isFavourite }),
+    };
 
     const res = await fetch("http://localhost:3000/anime/post", {
       method: "POST",
@@ -19,22 +26,15 @@ const Post = () => {
         "Content-type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        title,
-        genre,
-        watchStatus,
-        rating,
-        isFavourite,
-      }),
+      body: JSON.stringify(body),
     });
-
-    if(res.status === 401){
-      localStorage.removeItem("token")
-      router.push("/login")
-      return
+    if (res.status === 401) {
+      localStorage.removeItem("token");
+      router.push("/login");
+      return;
     }
     const data = await res.json();
-    console.log(data)
+    console.log(data);
     setTitle("");
     setGenre("");
     setWatchStatus("");

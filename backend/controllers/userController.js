@@ -36,17 +36,15 @@ const signUp = async (req, res) => {
 
 const Login = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-
-    if(!password || (username && email)){
+    
+    const { usernameORemail, password } = req.body;
+    
+    if(!password || !usernameORemail){
       return res.status(400).json({"message" : "required field cannot be empty"})
     }
-    const x = {};
-    if (username || email) {
-      x.$or = [{ username: username }, { email: email }];
-    }
-
-    const user = await User.findOne(x).select("+password");
+  
+    const user = await User.findOne({$or : [{username : usernameORemail}, {email:usernameORemail}]}).select("+password");
+    
     if (!user) {
       return res.status(400).json({ message: "invalid username or email" });
     }

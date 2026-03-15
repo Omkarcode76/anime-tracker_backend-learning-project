@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import Link from "next/link";
 const signUp = () => {
   const router = useRouter()
   useEffect(() => {
@@ -30,10 +30,11 @@ const signUp = () => {
       }),
     });
     const data = await res.json();
-    console.log();
+    
     setUsername("");
     setEmail("");
     setPassword("");
+    router.push('/login')
   };
 
   return (
@@ -71,6 +72,10 @@ const signUp = () => {
             Submit
           </button>
         </form>
+        <div className="flex justify-center my-6">
+
+          <Link href={'/login'} className="hover:underline"> Already Signup?</Link>
+            </div>
       </div>
     </div>
   );
