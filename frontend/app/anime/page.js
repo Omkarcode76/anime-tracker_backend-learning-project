@@ -65,6 +65,8 @@ const Anime = () => {
   };
 
   const UpdateAnime = async () => {
+    const result = confirm("press OK to save")
+    if(result){
     const token = localStorage.getItem("token");
     const updateId = editingid;
 
@@ -102,9 +104,13 @@ const Anime = () => {
       
     ))
     setEditingid("");
+  }
+  else{}
 
   };
   const DeleteAnime = async (item) => {
+    const result = confirm(`press OK to delete ${item.title} anime`)
+    if(result){
     const Deleteid = item._id;
     const token = localStorage.getItem("token");
     const res = await fetch(`http://localhost:3000/anime/${Deleteid}`, {
@@ -118,6 +124,8 @@ const Anime = () => {
       return
     }
     setAnimes(prev=>prev.filter(a=> a._id !== Deleteid))
+  }
+  else{}
       
 
   };
@@ -150,7 +158,7 @@ const Anime = () => {
             Logout
           </button>
         </div>
-    {animes.length !== 0 ? (<div>
+   
           <div>
             <div className="flex m-10 gap-16">
             <ul className=" flex gap items-center gap-5">
@@ -195,6 +203,7 @@ const Anime = () => {
             <Link href={'/anime/post'}><button className="bg-red-500  text-white rounded-full px-4 py-3 cursor-pointer hover:bg-red-400 text-lg font-bold">Add Anime</button></Link>
 </div>
           </div>
+         {animes.length !== 0 ? ( <div>
           <ul className="">
             {animes.map((a) => (
               <div key={a._id}>
@@ -315,10 +324,11 @@ const Anime = () => {
               </button>
             )}
           </div>
-        </div>)
+          </div>)
+       
         :(
           <div className="text-5xl font-bold flex justify-center items-center h-[50vh]">
-            <Link href={'/anime/post'} className="hover:underline">no animes added! click to add</Link>
+            <Link href={'/anime/post'} className="hover:underline">no anime found! click to add</Link>
           </div>
         )}
         

@@ -41,7 +41,7 @@ const Post = () => {
     setWatchStatus("");
     setRating("");
     setIsFavourite("");
-   
+    alert("anime card created")
   };
 
   return (
