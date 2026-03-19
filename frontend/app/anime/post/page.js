@@ -9,9 +9,11 @@ const Post = () => {
   const [watchStatus, setWatchStatus] = useState("");
   const [rating, setRating] = useState("");
   const [isFavourite, setIsFavourite] = useState("");
-
+  const [loading, setLoading] = useState(false)
+  const [errorh, setErrorh] = useState({})
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
     const token = localStorage.getItem("token");
     const body = {
       ...(title && { title }),
@@ -21,7 +23,8 @@ const Post = () => {
       ...(isFavourite && { isFavourite }),
     };
 
-    const res = await fetch("http://localhost:3000/anime/post", {
+    try {
+      const res = await fetch("http://localhost:3000/anime/post", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -35,15 +38,38 @@ const Post = () => {
       return;
     }
     const data = await res.json();
+    if(!res.ok){
+      setErrorh(data)
+      setLoading(false)
+      return
+    }
     console.log(data);
     setTitle("");
     setGenre("");
     setWatchStatus("");
     setRating("");
     setIsFavourite("");
+    setLoading(false)
     alert("anime card created")
-  };
+    setErrorh({})
+    } catch (error) {
+      setErrorh("something went wrong")
+      setLoading(false)
+      return
+    }
 
+    
+  };
+if(errorh.field === "server"){
+ return(
+    <>
+    <div className="flex justify-center items-center h-screen gap-6">
+<div className="text-red-500 text-center">{errorh.message}</div>
+<button onClick={()=>setErrorh("")} className="bg-blue-500 hover:bg-blue-400 px-4 py-3 text-white font-bold cursor-pointer rounded-full">try again</button>
+ </div>
+    </>
+  ) 
+}
   return (
     <div>
       <h1 className="text-center text-5xl font-bold text-red-500 m-10">
@@ -54,40 +80,61 @@ const Post = () => {
           onSubmit={handleSubmit}
           className="inputs flex flex-col items-center gap-6"
         >
+          <div className="w-[35%]">
           <input
             value={title}
             type="text"
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value)
+              {errorh.field === "title" && setErrorh({})}
+              }}
             placeholder="Enter Anime title"
-            className="p-4 w-[25%] border border-black rounded-2xl"
+            className="p-4 w-full border border-black rounded-2xl"
           />
-          <input
+          {errorh.field === "title" && (
+              <div className="errorText text-sm text-red-500">
+                {errorh.message}
+              </div>
+          )}
+          </div>
+          <div className="w-[35%]">
+           <input
             value={genre}
             type="text"
-            onChange={(e) => setGenre(e.target.value)}
+            onChange={(e) =>{ setGenre(e.target.value)
+              {errorh.field === "genre" && setErrorh({})}
+            }}
             placeholder="Enter Anime genre"
-            className="p-4 w-[25%] border border-black rounded-2xl"
+            className="p-4 w-full border border-black rounded-2xl"
           />
+          
+          {errorh.field === "genre" && (
+              <div className="errorText text-sm text-red-500">
+                {errorh.message}
+              </div>
+          )}
+          </div>
+         
           <input
             value={watchStatus}
             type="text"
             onChange={(e) => setWatchStatus(e.target.value)}
             placeholder="watch status can be 'notStarted', 'ongoing', 'completed'"
-            className="p-4 w-[25%] border border-black rounded-2xl"
+            className="p-4 w-[35%] border border-black rounded-2xl"
           />
           <input
             value={rating}
             type="text"
             onChange={(e) => setRating(e.target.value)}
             placeholder="rate between 1-10"
-            className="p-4 w-[25%] border border-black rounded-2xl"
+            className="p-4 w-[35%] border border-black rounded-2xl"
           />
           <input
             value={isFavourite}
             type="text"
             onChange={(e) => setIsFavourite(e.target.value)}
             placeholder="Favourite 'yes' or 'no'"
-            className="p-4 w-[25%] border border-black rounded-2xl"
+            className="p-4 w-[35%] border border-black rounded-2xl"
           />
           <button className="p-4 bg-blue-600 hover:bg-blue-400 cursor-pointer rounded-full text-white font-bold">
             Submit

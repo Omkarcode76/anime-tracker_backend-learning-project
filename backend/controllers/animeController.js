@@ -35,11 +35,11 @@ const getAnime = async (req, res) => {
       .sort({ [query.sort]: -1 });
 
     if (!animes) {
-      return res.status(404).json({ message: "No anime added" });
+      return res.status(404).json({field: "anime", message: "No anime added" });
     }
     res.status(200).json(animes);
   } catch (error) {
-    res.status(500).json({ Message: "Server Error" });
+    res.status(500).json({field : "server", message: "Server Error" });
   }
 };
 const getAnimeById = async (req, res) => {
@@ -52,7 +52,7 @@ const getAnimeById = async (req, res) => {
     }
     res.status(200).json(anime);
   } catch (error) {
-    res.status(500).json({ Message: "Server Error" });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
@@ -61,8 +61,11 @@ const postAnime = async (req, res) => {
     const { title, genre, watchStatus, isFavourite } = req.body;
     const rating = Number(req.body.rating) || 0
     
-    if (title === undefined || genre === undefined) {
-      return res.status(400).json({ message: "Fill title and genre" });
+    if (!title) {
+      return res.status(400).json({field: "title", message: "title cannnot be empty" });
+    }
+    if (!genre) {
+      return res.status(400).json({field : "genre", message: "genre cannnot be empty" });
     }
 
     const anime = await Anime.create({
@@ -76,7 +79,7 @@ const postAnime = async (req, res) => {
 
     res.status(201).json(anime);
   } catch (error) {
-    res.status(500).json({ Message: "Server Error" });
+    res.status(500).json({field:"server", message: "Server Error" });
   }
 };
 
@@ -86,11 +89,11 @@ const deleteAnime = async (req, res) => {
     const userId = req.user.userId;
     const anime = await Anime.findOneAndDelete({ userId: userId, _id: id });
     if (!anime) {
-      return res.status(404).json({ message: "anime with such id not found" });
+      return res.status(404).json({ message: "updation failed" });
     }
     res.status(200).json({ message: "anime deleted" });
   } catch (error) {
-    res.status(500).json({ Message: "Server Error" });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
@@ -115,7 +118,7 @@ const updateAnime = async (req, res) => {
     }
     res.status(200).json(anime);
   } catch (error) {
-    res.status(500).json({ Message: "Server Error" });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 

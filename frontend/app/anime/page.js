@@ -12,17 +12,20 @@ const Anime = () => {
   const [editRating, setEditRating] = useState("");
   const [animes, setAnimes] = useState([]);
   const [search, setSearch] = useState("");
+  const [inputSearch, setInputSearch] = useState("")
   const [page, setPage] = useState(1);
   const [favourite, setFavourite] = useState("");
   const [watchStatus, setWatchStatus] = useState("");
   const [editingid, setEditingid] = useState("");
   const [loading, setLoading] = useState(false)
+  const [errorh, setErrorh] = useState({})
 
   useEffect(() => {
     getAnimes();
   }, [search, page, favourite, watchStatus]);
 
   const getAnimes = async () => {
+    
   setLoading(true)
     const params = new URLSearchParams({
       search: search,
@@ -30,7 +33,8 @@ const Anime = () => {
       favourite: favourite,
       watchStatus: watchStatus,
     });
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
     const res = await fetch(`http://localhost:3000/anime?${params}`, {
       method: "GET",
       headers: {
@@ -42,9 +46,21 @@ const Anime = () => {
       router.push("/login");
       return;
     }
+
     const data = await res.json();
+    if(!res.ok){
+      setErrorh(data)
+      setLoading(false)
+      return
+    }
     setAnimes(data);
     setLoading(false)
+    } catch (error) {
+      setErrorh({message : "something went wrong"})
+      setLoading(false)
+      return
+    }
+   
   };
 
   const handleNextPage = () => {
@@ -65,6 +81,7 @@ const Anime = () => {
   };
 
   const UpdateAnime = async () => {
+    
     const result = confirm("press OK to save")
     if(result){
     const token = localStorage.getItem("token");
@@ -84,11 +101,13 @@ const Anime = () => {
         rating: editRating,
       }),
     });
+    const data = await res.json();
+
     if(!res.ok){
-      alert("something went wrong!, update unsuccessful!")
+      setAnimes(data.message)
+      
       return
     }
-    const data = await res.json();
     console.log(data);
     setAnimes(prev => prev.map(a=>
       a._id === editingid ?{
@@ -104,6 +123,7 @@ const Anime = () => {
       
     ))
     setEditingid("");
+    
   }
   else{}
 
@@ -111,6 +131,7 @@ const Anime = () => {
   const DeleteAnime = async (item) => {
     const result = confirm(`press OK to delete ${item.title} anime`)
     if(result){
+      
     const Deleteid = item._id;
     const token = localStorage.getItem("token");
     const res = await fetch(`http://localhost:3000/anime/${Deleteid}`, {
@@ -119,11 +140,14 @@ const Anime = () => {
         Authorization: `Bearer ${token}`,
       },
     });
+    const data = await res.json()
     if(!res.ok){
-      alert("Something went wrong!, try agin!")
+      setErrorh(data.message)
+      
       return
     }
     setAnimes(prev=>prev.filter(a=> a._id !== Deleteid))
+   
   }
   else{}
       
@@ -133,6 +157,7 @@ const Anime = () => {
     localStorage.removeItem("token");
     router.push("/login");
   };
+  
  if(loading){
    return (
     <div className="flex justify-center items-center h-[50vh]">
@@ -140,17 +165,29 @@ const Anime = () => {
     </div>
   );
  }
+ if(errorh.field === "server"){
+  return(
+    <>
+<div className="text-red-500 text-center">{errorh.message}</div>
+<button onClick={(e)=>{setErrorh("")}} className="bg-blue-500 hover:bg-blue-400 px-4 py-3 text-white font-bold cursor-pointer rounded-full">try again</button>
+    </>
+  )
+}
   return (
     <>
       <div className="">
         <div className="flex m-15 justify-around">
+          <form onSubmit={(e)=>{e.preventDefault() 
+            setSearch(inputSearch)}}>
           <input
             type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-20 bg-white w-[80vw] rounded-full p-7"
+            placeholder="Search animes by title or genre ..."
+            value={inputSearch}
+            onChange={(e) =>  setInputSearch(e.target.value)}
+            className="h-20 bg-white w-[60vw] rounded-full p-4"
           />
-
+         
+        </form>
           <button
             onClick={handleLogout}
             className="bg-red-500 text-white rounded-full px-4 cursor-pointer hover:bg-red-400 text-lg font-bold "
@@ -170,6 +207,7 @@ const Anime = () => {
                   setWatchStatus("");
                   setFavourite("");
                   setSearch("");
+                  setInputSearch("")
                 }}
                 className={`hover:text-white cursor-pointer rounded-full ${!watchStatus && !favourite && "bg-green-500 text-white"} hover:bg-green-500 hover:rounded-full px-4 py-2 font-bold  text-lg`}
               >

@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 const signUp = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-
+    
     const hashedPassword = await bcrypt.hash(password, 8);
     
     const isUsername = await User.findOne({ username: username });
@@ -13,11 +13,14 @@ const signUp = async (req, res) => {
     if (isUsername) {
       return res
         .status(400)
-        .json({ message: `user with username ${username} already exists` });
+        .json({field : "username", message: `user with username ${username} already exists` });
     }
 
     if (isEmail) {
-      return res.status(400).json({ message: `email ${email} already exists` });
+      return res.status(400).json({field : "email", message: `email ${email} already exists` });
+    }
+    if(password.length <= 3){
+      return res.status(400).json({field : "password",message : "password must atleast contain 4 characters"})
     }
     const user = await User.create({
       username,
@@ -30,7 +33,7 @@ const signUp = async (req, res) => {
       createdAt: user.createdAt,
     });
   } catch (error) {
-    res.status(500).json({ message: "server error" });
+    res.status(500).json({field:"server", message: "server error" });
   }
 };
 
@@ -39,20 +42,20 @@ const Login = async (req, res) => {
     
     const { usernameORemail, password } = req.body;
     
-    if(!password || !usernameORemail){
-      return res.status(400).json({"message" : "required field cannot be empty"})
+    if(!usernameORemail || !password ){
+      return res.status(400).json({field : "usernameORemail & password",message : "required fields cannot be empty"})
     }
   
     const user = await User.findOne({$or : [{username : usernameORemail}, {email:usernameORemail}]}).select("+password");
     
     if (!user) {
-      return res.status(400).json({ message: "invalid username or email" });
+      return res.status(400).json({field : "usernameORemail", message: "invalid username or email" });
     }
 
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return res.status(400).json({ message: "incorrect password" });
+      return res.status(400).json({field :"password",  message: "incorrect password" });
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
@@ -68,7 +71,7 @@ const Login = async (req, res) => {
       }}
     );
   } catch (error) {
-    res.status(500).json({ message: "server error" });
+    res.status(500).json({field:"server", message: "server error" });
   }
 };
 
