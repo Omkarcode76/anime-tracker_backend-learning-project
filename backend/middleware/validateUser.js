@@ -10,7 +10,7 @@ const validateSignup = async (req, res, next) => {
   }
   const emailRegex =
     /^(?!.*\.\.)(?!.*\s)[a-z0-9]+(\.[a-z0-9]+)*@[a-z]+\.[a-z]{2,4}$/;
-    
+
   if (!emailRegex.test(email)) {
     return res
       .status(400)
@@ -39,5 +39,7 @@ const validateSignup = async (req, res, next) => {
   }
   next();
 };
+
+
 
 export { validateSignup };

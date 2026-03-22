@@ -122,4 +122,29 @@ const updateAnime = async (req, res) => {
   }
 };
 
-export { getAnime, getAnimeById, postAnime, deleteAnime, updateAnime };
+const getStats = async (req, res) => {
+  try {
+    const userId = req.user.userId
+    const stats = {}
+    stats.total = await Anime.countDocuments({userId})
+   
+    stats.favourite = await Anime.countDocuments({
+      userId,
+      isFavourite : "yes"
+    })
+    stats.completed = await Anime.countDocuments({
+      userId,
+      watchStatus : "completed"
+    })
+    stats.ongoing = await Anime.countDocuments({
+      userId,
+      watchStatus : "ongoing"
+    })
+    res.status(200).json(stats)
+  }
+  catch (error) {
+  res.status(500).json({field : "server", message : "server error"})
+}
+}
+
+export { getAnime, getAnimeById, postAnime, deleteAnime, updateAnime, getStats };

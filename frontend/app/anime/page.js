@@ -19,7 +19,10 @@ const Anime = () => {
   const [editingid, setEditingid] = useState("");
   const [loading, setLoading] = useState(false)
   const [errorh, setErrorh] = useState({})
-
+  useEffect(() => {
+    window.scrollTo({top:0})
+  }, [page])
+  
   useEffect(() => {
     getAnimes();
   }, [search, page, favourite, watchStatus]);
@@ -108,7 +111,7 @@ const Anime = () => {
       
       return
     }
-    console.log(data);
+
     setAnimes(prev => prev.map(a=>
       a._id === editingid ?{
         ...a,
@@ -154,8 +157,11 @@ const Anime = () => {
 
   };
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/login");
+    const result = confirm("do you really want to loggout")
+    if(result)
+    {localStorage.removeItem("token");
+    router.push("/login");}
+    else{}
   };
   
  
@@ -170,7 +176,7 @@ const Anime = () => {
   return (
     <>
       <div className="">
-        <div className="flex m-15 justify-around">
+        <div className="flex m-15 justify-around items-center">
           <form onSubmit={(e)=>{e.preventDefault() 
             setSearch(inputSearch)}}>
           <input
@@ -182,12 +188,20 @@ const Anime = () => {
           />
          
         </form>
+        <div className="flex gap-5">
+         <button
+            onClick={()=>router.push('/user')}
+            className="bg-red-500 py-3 mx-2 text-white rounded-full px-4 cursor-pointer hover:bg-red-400 text-lg font-bold "
+          >
+            Profile
+          </button>
           <button
             onClick={handleLogout}
-            className="bg-red-500 text-white rounded-full px-4 cursor-pointer hover:bg-red-400 text-lg font-bold "
+            className="bg-red-500 py-3 mx-2 text-white rounded-full px-4 cursor-pointer hover:bg-red-400 text-lg font-bold "
           >
             Logout
           </button>
+          </div>
         </div>
    
           <div>
@@ -233,6 +247,7 @@ const Anime = () => {
               </li>
             </ul>
             <Link href={'/anime/post'}><button className="bg-red-500  text-white rounded-full px-4 py-3 cursor-pointer hover:bg-red-400 text-lg font-bold">Add Anime</button></Link>
+            <Link href={'/anime/dashboard'}><button className="bg-red-500  text-white rounded-full px-4 py-3 cursor-pointer hover:bg-red-400 text-lg font-bold">Dashboard</button></Link>
 </div>
           </div>
           {loading && (<div className="flex justify-center items-center h-[50vh]">

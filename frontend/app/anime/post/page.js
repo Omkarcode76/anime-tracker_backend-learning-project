@@ -43,7 +43,7 @@ const Post = () => {
       setLoading(false)
       return
     }
-    console.log(data);
+   
     setTitle("");
     setGenre("");
     setWatchStatus("");
